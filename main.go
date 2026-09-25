@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+
+type Coordinates struct {
+	x int
+	y int
+}
+
 func main() {
 	rows, column := 9, 9
 	board := make([][]int, rows)
@@ -94,6 +100,32 @@ func solveBoard(board [][]int) {
 		if !progress {
 			fmt.Println("could not solve any further")
 			return
+		}
+	}
+}
+
+func refreshOption(board [][]int, options [][]map[int]bool, coord Coordinates) {
+	x := coord.x
+	y := coord.y
+
+	if board[x][y] != 0 {
+		return
+	}
+
+	for columns := range board {
+		options[x][y][board[x][columns]] = false
+	}
+
+	for rows := range board {
+		options[x][y][board[rows][y]] = false
+	}
+
+	blockRow := (x / 3) * 3
+	blockCol := (y / 3) * 3
+
+	for r := blockRow; r < blockRow+3; r++ {
+		for c := blockCol; c < blockCol+3; c++ {
+			options[x][y][board[r][c]] = false
 		}
 	}
 }

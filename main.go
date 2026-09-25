@@ -130,6 +130,29 @@ func refreshOption(board [][]int, options [][]map[int]bool, coord Coordinates) {
 	}
 }
 
+func setBoardAndRefresh(board [][]int, options [][]map[int]bool, coord Coordinates, val int) {
+	x, y := coord.x, coord.y
+
+	board[x][y] = val
+
+	for columns := range board {
+		options[x][columns][val] = false
+	}
+
+	for rows := range board {
+		options[rows][y][val] = false
+	}
+
+	blockRow := (x / 3) * 3
+	blockCol := (y / 3) * 3
+
+	for r := blockRow; r < blockRow+3; r++ {
+		for c := blockCol; c < blockCol+3; c++ {
+			options[r][c][val] = false
+		}
+	}
+}
+
 func getProblem(board [][]int) {
 	fmt.Println("Enter the problem:")
 	scanner := bufio.NewScanner(os.Stdin)

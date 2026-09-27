@@ -104,6 +104,79 @@ func solveBoard(board [][]int) {
 	}
 }
 
+func solveHiddenSingles(board [][]int, options [][]map[int]bool) bool {
+	prograss := false
+	for rows := range options {
+		occurence := make(map[int][]Coordinates, 9)
+
+		for columns := range options {
+			markHiddenSingles(board, options, occurence, rows, columns)
+		}
+
+		if findHiddenSingles(board, options, occurence) {
+			prograss = true
+		}
+	}
+
+	for columns := range options {
+		occurence := make(map[int][]Coordinates, 9)
+
+		for rows := range options {
+			markHiddenSingles(board, options, occurence, rows, columns)
+		}
+
+		if findHiddenSingles(board, options, occurence) {
+			prograss = true
+		}
+	}
+
+	for x := 0; x < 8; x += 3 {
+		for y := 0; y < 8; y += 3 {
+			occurence := make(map[int][]Coordinates, 9)
+
+			blockRow := (x / 3) * 3
+			blockCol := (y / 3) * 3
+
+			for r:= blockRow; r < blockRow+3; r++ {
+				for c:= blockCol; c < blockCol+3; c++ {
+					markHiddenSingles(board, options, occurence, r, c)
+				}
+			}
+
+			if findHiddenSingles(board, options, occurence) {
+				prograss = true
+			}
+		}
+	}
+
+
+	return prograss
+}
+
+func markHiddenSingles(board [][]int, options[][]map[int]bool, occurence map[int][]Coordinates, rows, columns int) {
+	for key, value := range options[rows][columns] {
+		if value {
+			occurence[key] = append(occurence[key], Coordinates {
+				x: rows,
+				y: columns,
+			})
+		}
+	}
+}
+
+func findHiddenSingles(board [][]int, options[][]map[int]bool, occurence map[int][]Coordinates) bool {
+	prograss := false
+	for key, value := range occurence {
+		if len(value) == 1 {
+			setBoardAndRefresh(board, options,
+			Coordinates{x: value[0].x, y: value[0].y}, key)
+			prograss = true
+		}
+	}
+
+	return prograss
+}
+
 func refreshOption(board [][]int, options [][]map[int]bool, coord Coordinates) {
 	x := coord.x
 	y := coord.y

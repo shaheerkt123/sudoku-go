@@ -23,7 +23,7 @@ func main() {
 	}
 	getProblem(board)
 	solveBoard(board)
-	fmt.Println(board)
+	printBoard(board)
 }
 
 
@@ -150,6 +150,17 @@ func setBoardAndRefresh(board [][]int, options [][]map[int]bool, coord Coordinat
 		for c := blockCol; c < blockCol+3; c++ {
 			options[r][c][val] = false
 		}
+	}
+}
+
+func printBoard(board [][]int) {
+	for i := range board {
+		strNums := make([]string, len(board[i]))
+		for j, n := range board[i] {
+			strNums[j] = strconv.Itoa(n)
+		}
+
+		fmt.Printf("%s\n", strings.Join(strNums, " "))
 	}
 }
 

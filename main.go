@@ -41,48 +41,13 @@ func solveBoard(board [][]int) {
 
 	fmt.Println("lets solve")
 	for {
-		progress := false
-		for i := range board {
-			for j := range board[i] {
-				if board[i][j] != 0 {
-					continue
-				}
+		prograss := false
 
-				for columns := range board {
-					options[i][j][board[i][columns]] = false
-				}
-
-				for rows := range board {
-					options[i][j][board[rows][j]] = false
-				}
-
-				quadrentRow := (i / 3) * 3
-				quadrentCol := (j / 3) * 3
-
-				for r := quadrentRow; r < quadrentRow+3; r++ {
-					for c := quadrentCol; c < quadrentCol+3; c++ {
-						options[i][j][board[r][c]] = false
-					}
-				}
-
-				avilableOptions := 0
-				avilableOption := 0
-				for key, value := range options[i][j] {
-					if value {
-						avilableOptions++
-						avilableOption = key
-					}
-				}
-				if avilableOptions < 1 {
-					fmt.Println("invalid problem")
-					return
-				}
-
-				if avilableOptions == 1 {
-					board[i][j] = avilableOption
-					progress = true
-				}
-			}
+		if solveSingles(board, options) {
+			prograss = true
+		}
+		if solveHiddenSingles(board, options) {
+			prograss = true
 		}
 
 		solved := true
@@ -97,11 +62,45 @@ func solveBoard(board [][]int) {
 			return
 		}
 
-		if !progress {
+		if !prograss {
 			fmt.Println("could not solve any further")
 			return
 		}
 	}
+}
+
+func solveSingles(board [][]int, options [][]map[int]bool) bool {
+	prograss := false
+	for i := range board {
+		for j := range board[i] {
+			if board[i][j] != 0 {
+				continue
+			}
+
+			refreshOption(board, options, Coordinates{ x: i, y: j})
+			avilableOptions := 0
+			avilableOption := 0
+
+			for key, value := range options[i][j] {
+				if value {
+					avilableOptions++
+					avilableOption = key
+				}
+			}
+			if avilableOptions < 1 {
+				fmt.Println("invalid problem")
+				return prograss
+			}
+
+			if avilableOptions == 1 {
+				setBoardAndRefresh(board, options,
+				Coordinates{x: i, y: j}, avilableOption)
+				prograss = true
+			}
+		}
+	}
+
+	return prograss
 }
 
 func solveHiddenSingles(board [][]int, options [][]map[int]bool) bool {
